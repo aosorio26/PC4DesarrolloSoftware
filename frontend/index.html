@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetAlert Lima</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+<header class="hero">
+    <nav class="topbar">
+        <span class="brand">PetAlert Lima</span>
+        <button class="tab-link active" data-tab="inicio">Inicio</button>
+        <button class="tab-link" data-tab="cuenta">Cuenta</button>
+        <button class="tab-link" data-tab="perdido">Reportar</button>
+        <button class="tab-link" data-tab="avistamiento">Avistamiento</button>
+        <button class="tab-link" data-tab="busqueda">Buscar</button>
+        <button class="tab-link" data-tab="cuidadores">Cuidadores</button>
+        <button class="tab-link" data-tab="panel">Panel</button>
+    </nav>
+    <section class="hero-content">
+        <p class="eyebrow">Ayuda organizada para mascotas perdidas</p>
+        <h1>Puedes reportar tu mascota perdida o avistamiento de otras mascotas.</h1>
+        <p>También brindamos información sobre cuidadores o centros de adopción/venta.</p>
+        <div id="session-pill" class="session-pill">Sin sesión iniciada</div>
+    </section>
+</header>
+
+<main>
+    <section id="tab-inicio" class="tab-page active">
+        <section class="map-panel">
+            <div>
+                <p class="eyebrow">Mapa de apoyo</p>
+                <h2>Selecciona una ubicación</h2>
+                <p>Elige para qué formulario quieres usar el punto y haz clic en el mapa.</p>
+                <div class="map-buttons">
+                    <button type="button" data-target="lost">Usar en reporte</button>
+                    <button type="button" data-target="sighting">Usar en avistamiento</button>
+                    <button type="button" data-target="caregiver">Usar en cuidador</button>
+                </div>
+                <p id="map-status" class="muted">Haz clic en el mapa para seleccionar coordenadas.</p>
+            </div>
+            <div id="map"></div>
+        </section>
+    </section>
+
+    <section id="tab-cuenta" class="tab-page">
+        <div class="two-columns">
+            <article class="panel">
+                <h2>Crear cuenta</h2>
+                <form id="register-form">
+                    <label>Nombre completo <input id="reg-name" required placeholder="Ej. Andrea Rojas"></label>
+                    <label>Correo <input id="reg-email" type="email" required placeholder="correo@ejemplo.com"></label>
+                    <label>Teléfono <input id="reg-phone" required placeholder="999999999"></label>
+                    <label>DNI para verificar cuenta <input id="reg-dni" required maxlength="8" placeholder="8 dígitos"></label>
+                    <label>Clave <input id="reg-password" type="password" required placeholder="Mínimo simple para la demo"></label>
+                    <button class="primary button" type="submit">Crear cuenta</button>
+                </form>
+            </article>
+            <article class="panel">
+                <h2>Iniciar sesión</h2>
+                <form id="login-form">
+                    <label>Correo <input id="login-email" type="email" required></label>
+                    <label>Clave <input id="login-password" type="password" required></label>
+                    <button class="secondary button" type="submit">Entrar</button>
+                    <button id="logout" class="ghost button" type="button">Cerrar sesión</button>
+                </form>
+                <div id="account-box" class="message">Crea una cuenta o inicia sesión para recibir avisos. Para probar rápido: demo@petalert.pe / demo123</div>
+            </article>
+        </div>
+    </section>
+
+    <section id="tab-perdido" class="tab-page">
+        <article class="panel wide">
+            <h2>Registrar mascota perdida</h2>
+            <form id="lost-form" class="grid-form">
+                <label>Nombre de la mascota <input id="lost-name" required placeholder="Ej. Luna"></label>
+                <label>Especie <select id="lost-species" required><option>Perro</option><option>Gato</option><option>Ave</option><option>Conejo</option></select></label>
+                <label>Raza <input id="lost-breed" placeholder="Ej. Mestizo"></label>
+                <label>Color <input id="lost-color" placeholder="Ej. Marrón"></label>
+                <label class="span-2">Descripción <textarea id="lost-description" required placeholder="Collar, tamaño, conducta, última vez vista"></textarea></label>
+                <label>Radio de alerta en km <input id="lost-radius" type="number" min="0.2" step="0.1" value="1"></label>
+                <label>Referencia <input id="lost-address" placeholder="Ej. Parque Kennedy"></label>
+                <label>Latitud <input id="lost-lat" type="number" step="0.000001" value="-12.046374" required></label>
+                <label>Longitud <input id="lost-lng" type="number" step="0.000001" value="-77.042793" required></label>
+                <button class="primary button span-2" type="submit">Guardar reporte</button>
+            </form>
+            <p class="muted">El contacto del dueño se toma de la cuenta iniciada y no se publica.</p>
+        </article>
+    </section>
+
+    <section id="tab-avistamiento" class="tab-page">
+        <article class="panel wide">
+            <h2>Registrar avistamiento</h2>
+            <form id="sighting-form" class="grid-form">
+                <label class="span-2">Reporte relacionado <select id="sighting-report-id"><option value="">No sé cuál es</option></select></label>
+                <label>Especie <select id="sighting-species" required><option>Perro</option><option>Gato</option><option>Ave</option><option>Conejo</option></select></label>
+                <label>Raza aproximada <input id="sighting-breed" placeholder="Ej. Mestizo"></label>
+                <label>Color <input id="sighting-color" placeholder="Ej. Negro"></label>
+                <label>Contacto voluntario <input id="sighting-contact" placeholder="Celular o correo opcional"></label>
+                <label class="span-2">Notas <textarea id="sighting-notes" required placeholder="Dónde estaba, dirección en la que iba, hora aproximada"></textarea></label>
+                <label>Latitud <input id="sighting-lat" type="number" step="0.000001" value="-12.046374" required></label>
+                <label>Longitud <input id="sighting-lng" type="number" step="0.000001" value="-77.042793" required></label>
+                <label class="span-2">Referencia <input id="sighting-address" placeholder="Ej. Av. Arequipa cuadra 30"></label>
+                <button class="primary button span-2" type="submit">Enviar pista</button>
+            </form>
+        </article>
+    </section>
+
+    <section id="tab-busqueda" class="tab-page">
+        <article class="panel wide">
+            <div class="section-heading"><div><p class="eyebrow">Buscar mascota</p><h2>Adoptar, comprar o verificar pérdida</h2></div></div>
+            <form id="search-form" class="search-form">
+                <label>Quiero buscar para <select id="search-intent" required><option value="ADOPCION">Adoptar</option><option value="VENTA">Comprar en criadero certificado</option><option value="VERIFICAR_PERDIDA">Verificar si está perdido</option></select></label>
+                <label>Especie <select id="search-species"><option value="">Cualquiera</option><option>Perro</option><option>Gato</option><option>Ave</option><option>Conejo</option></select></label>
+                <label>Raza <input id="search-breed" placeholder="Opcional"></label>
+                <label>Color <input id="search-color" placeholder="Opcional"></label>
+                <button class="primary button" type="submit">Buscar</button>
+            </form>
+            <div id="search-results" class="cards"></div>
+        </article>
+    </section>
+
+    <section id="tab-cuidadores" class="tab-page">
+        <div class="two-columns">
+            <article class="panel">
+                <h2>Registrar cuidador</h2>
+                <form id="caregiver-form">
+                    <label>Nombre completo <input id="caregiver-name" required placeholder="Ej. Andrea Rojas"></label>
+                    <div class="field-row"><label>Rol <select id="caregiver-role" required><option value="CUIDADOR_SOLIDARIO">Cuidador Solidario</option><option value="PROFESIONAL">Profesional</option><option value="ESPECIALIZADO">Especializado</option></select></label><label>DNI <input id="caregiver-dni" required maxlength="8" placeholder="8 dígitos"></label></div>
+                    <div class="field-row"><label>Teléfono de contacto <input id="caregiver-phone" required placeholder="999999999"></label><label>Correo de contacto <input id="caregiver-email" type="email" placeholder="opcional@correo.com"></label></div>
+                    <label>Especies aceptadas <input id="caregiver-species" value="Perro,Gato" placeholder="Separar por coma"></label>
+                    <label>Tamaños aceptados <input id="caregiver-sizes" value="Pequeño,Mediano" placeholder="Separar por coma"></label>
+                    <div class="checks"><label><input id="caregiver-meds" type="checkbox"> Puede administrar medicamentos</label><label><input id="caregiver-alerts" type="checkbox" checked> Recibir alertas de mascotas perdidas</label></div>
+                    <div class="field-row"><label>Latitud <input id="caregiver-lat" type="number" step="0.000001" value="-12.046374" required></label><label>Longitud <input id="caregiver-lng" type="number" step="0.000001" value="-77.042793" required></label></div>
+                    <label>Referencia <input id="caregiver-address" placeholder="Ej. San Isidro"></label>
+                    <button class="primary button" type="submit">Crear cuidador</button>
+                </form>
+            </article>
+            <article class="panel">
+                <h2>Agregar reseña</h2>
+                <form id="review-form">
+                    <label>Cuidador <select id="review-caregiver"></select></label>
+                    <label>Tu nombre <input id="review-owner" required placeholder="Ej. Orlando"></label>
+                    <label>Calificación <input id="review-rating" type="number" min="1" max="5" value="5" required></label>
+                    <label>Comentario <textarea id="review-comment" placeholder="Buen servicio"></textarea></label>
+                    <button class="secondary button" type="submit">Guardar reseña</button>
+                </form>
+            </article>
+        </div>
+    </section>
+
+    <section id="tab-panel" class="tab-page">
+        <article class="panel wide">
+            <div class="section-heading"><h2>Panel general</h2><button id="refresh" class="secondary button" type="button">Actualizar</button></div>
+            <div id="system-message" class="message">Listo.</div>
+            <h3>Mis avisos</h3><div id="inbox-list" class="cards compact"></div>
+            <h3>Reportes activos</h3><div id="lost-list" class="cards compact"></div>
+            <h3>Avistamientos recibidos</h3><div id="sighting-list" class="cards compact"></div>
+            <h3>Cuidadores</h3><p class="muted">Los contactos se muestran solo a usuarios con cuenta verificada.</p><div id="caregiver-list" class="cards compact"></div>
+        </article>
+    </section>
+</main>
+
+<footer><p>PetAlert Lima centraliza reportes, pistas ciudadanas y cuidadores para facilitar la recuperación de mascotas.</p></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
